@@ -1,0 +1,11 @@
+{
+  "cmake.configureOnOpen": false,
+  "files.associations": {
+    "compare": "c",
+    "stdlib.h": "c",
+    "utilities.h": "c",
+    "string_view": "c"
+  },
+  "json.schemaDownload.enable": true,
+  "cmake.useCMakePresets": "always",
+}

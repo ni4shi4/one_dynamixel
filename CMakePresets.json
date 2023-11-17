@@ -1,0 +1,97 @@
+{
+    "version": 3,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 21,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "default",
+            "displayName": "Default Config",
+            "description": "Default build config with Ninja generator",
+            "hidden": true,
+            "binaryDir": "build/default"
+        },
+        {
+            "name": "run",
+            "displayName": "Run Config",
+            "description": "Build config for running code",
+            "hidden": true,
+            "inherits": "default",
+            "binaryDir": "build/run",
+            "cacheVariables": {
+                "TEST_BUILD": {
+                    "type": "BOOL",
+                    "value": "OFF"
+                }
+            }
+        },
+        {
+            "name": "test",
+            "displayName": "Test Config",
+            "description": "Build config for testing code",
+            "inherits": "default",
+            "binaryDir": "build/test",
+            "toolchainFile": "${sourceDir}/cmake/TestToolChain.cmake",
+            "cacheVariables": {
+                "TEST_BUILD": {
+                    "type": "BOOL",
+                    "value": "ON"
+                },
+                "CMAKE_BUILD_TYPE": {
+                    "type": "STRING",
+                    "value": "Release"  
+                }
+            }
+        },
+        {
+            "name": "run_debug",
+            "displayName": "Run Config [Debug]",
+            "description": "Debug build config for running code",
+            "inherits": "run",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": {
+                    "type": "STRING",
+                    "value": "Debug"  
+                }
+            }
+        },
+        {
+            "name": "run_release",
+            "displayName": "Run Config [Release]",
+            "description": "Release build config for running code",
+            "inherits": "run",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": {
+                    "type": "STRING",
+                    "value": "Release"  
+                }
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "run_release",
+            "displayName": "Run Config [Release]",
+            "configurePreset": "run_release"
+        },
+        {
+            "name": "run_debug",
+            "displayName": "Run Config [Debug]",
+            "configurePreset": "run_debug"
+        },
+        {
+            "name": "test",
+            "displayName": "Test Config",
+            "configurePreset": "test"
+        }
+    ],
+    "testPresets": [
+        {
+            "name": "test",
+            "displayName": "Test Config",
+            "configurePreset": "test"
+        }
+    ]
+}
