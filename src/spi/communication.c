@@ -18,7 +18,7 @@ int create_spi_packet(
     uint16_t length, fixed_parameter_length;
     uint16_t checksum;
     int packet_size;
-    
+
 
     // ヘッダーの代入
     packet[0] = HEADER_1;
@@ -41,7 +41,7 @@ int create_spi_packet(
         {
             fixed_parameter[fixed_parameter_length] = parameter[i];
             if (
-                parameter[i - 2] == HEADER_1 
+                parameter[i - 2] == HEADER_1
                 && parameter[i - 1] == HEADER_2
                 && parameter[i] == HEADER_3
             )
@@ -50,7 +50,7 @@ int create_spi_packet(
                 fixed_parameter_length++;
                 fixed_parameter[fixed_parameter_length] = HEADER_N;
             }
-            
+
             fixed_parameter_length++;
         }
     }
@@ -64,7 +64,7 @@ int create_spi_packet(
     // length、パケットのサイズを計算
     length = fixed_parameter_length + 1 + 2;
     packet_size = 4 + 1 + 2 + length;
-    
+
     // lengthの代入
     divide_into_byte_pair(
         length,
@@ -73,10 +73,12 @@ int create_spi_packet(
     );
 
     // インストラクションの代入
-    packet[7] = instruction;    
+    packet[7] = instruction;
 
     // パラメータの代入
     memcpy(packet + 8, fixed_parameter, fixed_parameter_length);
+
+    free(fixed_parameter);
 
     // 上で代入したデータに対するchecksumの計算・代入
     checksum = crc_16_ibm(packet, packet_size - 2);
@@ -86,7 +88,7 @@ int create_spi_packet(
         packet + packet_size - 1
     );
 
-    return packet_size; 
+    return packet_size;
 }
 
 

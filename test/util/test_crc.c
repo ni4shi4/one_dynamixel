@@ -43,14 +43,14 @@ void test_crc_16_ibm_ReturnExpectedValueForSpecificData(void)
     uint8_t data1[] = {
         0x55
     };
-    uint16_t expected1 = 0x01fe; 
+    uint16_t expected1 = 0x01fe;
     TEST_ASSERT_EQUAL_HEX16(expected1, crc_16_ibm(data1, len1));
 
     int len2 = 2;
     uint8_t data2[] = {
         0x55, 0x44,
     };
-    uint16_t expected2 = 0x7f9d; 
+    uint16_t expected2 = 0x7f9d;
     TEST_ASSERT_EQUAL_HEX16(expected2, crc_16_ibm(data2, len2));
 
     int len3 = 8;
@@ -60,7 +60,7 @@ void test_crc_16_ibm_ReturnExpectedValueForSpecificData(void)
         0x03, 0x00,
         0x01,
     };
-    uint16_t expected3 = 0x4e19; 
+    uint16_t expected3 = 0x4e19;
     TEST_ASSERT_EQUAL_HEX16(expected3, crc_16_ibm(data3, len3));
 
     int len4 = 12;
@@ -72,7 +72,7 @@ void test_crc_16_ibm_ReturnExpectedValueForSpecificData(void)
         0x84, 0x00,
         0x04, 0x00,
     };
-    uint16_t expected4 = 0x151d; 
+    uint16_t expected4 = 0x151d;
     TEST_ASSERT_EQUAL_HEX16(expected4, crc_16_ibm(data4, len4));
 
     int len5 = 23;
@@ -83,7 +83,7 @@ void test_crc_16_ibm_ReturnExpectedValueForSpecificData(void)
         0x03,
         0x7a, 0x02, 0xff, 0xff, 0xfd, 0xfd, 0xff, 0xff, 0xfd, 0xfd, 0xff, 0xff, 0xfd, 0xfd, 0xff
     };
-    uint16_t expected5 = 0xe2a3; 
+    uint16_t expected5 = 0xe2a3;
     TEST_ASSERT_EQUAL_HEX16(expected5, crc_16_ibm(data5, len5));
 }
 

@@ -13,7 +13,7 @@
       "servertype": "openocd",
       "gdbPath": "gdb-multiarch",
       "serverArgs": [
-        
+
       ],
       "device": "RP2040",
       "configFiles": [

@@ -26,7 +26,7 @@ uint16_t bit_reflect_16(
 );
 
 /** @brief チェックサム値を計算する(CRC-16-IBM)。
- * 
+ *
  *  Dynamixelと通信する際は、下位8ビットを先に送る(リトルエンディアン)
  *  @param[in] *data チェックサムを計算するデータ
  *  @param[in] len データの長さ

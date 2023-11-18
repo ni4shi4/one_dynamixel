@@ -10,7 +10,7 @@ extern "C" {
 
 /***
  * @brief SPI通信で送信するデータ(インストラクションパケット)を作成する
- * 
+ *
  * 結果を格納する変数を予め用意した上で引数として渡す必要がある
  * @param[out] *packet SPI通信で送信するためのデータ(配列)
  * @param[in] id デバイスID
@@ -29,7 +29,7 @@ int create_spi_packet(
 
 /***
  * @brief SPI通信で受信したデータ(ステータスパケット)を解析し、checksumの確認を行う
- * 
+ *
  * 結果を格納する変数を予め用意した上で引数として渡す必要がある
  * @param[in] *packet SPI通信で受信したデータ(配列)
  * @param[out] *id デバイスID

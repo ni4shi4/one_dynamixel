@@ -23,11 +23,11 @@ int main()
     // gpio_set_function(PIN_CS,   GPIO_FUNC_SIO);
     // gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
     // gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
-    
+
     // // Chip select is active-low, so we'll initialise it to a driven-high state
     // gpio_set_dir(PIN_CS, GPIO_OUT);
     // gpio_put(PIN_CS, 1);
-    
+
 
 
     puts("Hello, world!");

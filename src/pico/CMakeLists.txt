@@ -17,7 +17,7 @@ target_link_libraries(
 
 # Add any user requested libraries
 target_link_libraries(
-  one_dynamixel 
+  one_dynamixel
   hardware_spi
 )
 
