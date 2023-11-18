@@ -1,5 +1,5 @@
 add_subdirectory(util)
-add_subdirectory(spi)
+add_subdirectory(uart)
 
 # テスト以外ではpicoをビルドする
 if(NOT TEST_BUILD)

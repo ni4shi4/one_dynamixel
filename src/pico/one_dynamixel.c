@@ -1,36 +1,76 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
-#include "hardware/spi.h"
+#include "hardware/uart.h"
+#include "uart/communication.h"
 
-// SPI Defines
-// We are going to use SPI 0, and allocate it to the following GPIO pins
-// Pins can be changed, see the GPIO function select table in the datasheet for information on GPIO assignments
-#define SPI_PORT spi0
-#define PIN_MISO 16
-#define PIN_CS   17
-#define PIN_SCK  18
-#define PIN_MOSI 19
+// UART PIN Defines
+#define UART_ID (uart1)
+const uint UART_TX_PIN = 8;
+const uint UART_RX_PIN = 9;
+const bool hw_flow_cts = false;
+const bool hw_flow_rts = false;
 
+/**
+ * シリアル通信の仕様
+ * - https://emanual.robotis.com/docs/en/dxl/protocol2/#dynamixel-protocol
+ * -
+ */
+const uint BAUD_RATE = 57600;
+const uint DATA_BITS = 8;
+const uint STOP_BITS = 1;
+const uart_parity_t PARITY = UART_PARITY_NONE;
+const uint32_t WAIT_US = 1000000;
+
+// パケット処理の仕様
+#define READ_SIZE 50
+#define BUFFER_SIZE 100
 
 
 int main()
 {
     stdio_init_all();
 
-    // SPI initialisation. This example will use SPI at 1MHz.
-    // spi_init(SPI_PORT, 1000*1000);
-    // gpio_set_function(PIN_MISO, GPIO_FUNC_SPI);
-    // gpio_set_function(PIN_CS,   GPIO_FUNC_SIO);
-    // gpio_set_function(PIN_SCK,  GPIO_FUNC_SPI);
-    // gpio_set_function(PIN_MOSI, GPIO_FUNC_SPI);
+    uint actual_baud_rate = uart_init(UART_ID, BAUD_RATE);
+    gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
 
-    // // Chip select is active-low, so we'll initialise it to a driven-high state
-    // gpio_set_dir(PIN_CS, GPIO_OUT);
-    // gpio_put(PIN_CS, 1);
+    uart_set_hw_flow(UART_ID, hw_flow_cts, hw_flow_rts);
+    uart_set_format(UART_ID, DATA_BITS, STOP_BITS, PARITY);
 
+    uart_set_fifo_enabled(UART_ID, true);
 
+    uint8_t buffer[BUFFER_SIZE] = {0};
+    uint8_t packet[BUFFER_SIZE] = {0};
+    int packet_size;
 
-    puts("Hello, world!");
+    while (1)
+    {
+        packet_size = create_uart_packet(packet, 0xfe, 0, 1, NULL);
+        uart_write_blocking(UART_ID, packet, packet_size);
+
+        if (uart_is_readable_within_us(UART_ID, WAIT_US))
+        {
+            for (int i = 0; i < READ_SIZE; i++)
+            {
+                uart_read_blocking(UART_ID, buffer + i, 1);
+
+                if (!uart_is_readable(UART_ID))
+                    break;
+            }
+
+            puts("Read buffer:");
+            for (int i = 0; i < READ_SIZE; i++)
+            {
+                printf("%2hhx", buffer[i]);
+            }
+        }
+        else
+        {
+            puts("No data available");
+        }
+
+        sleep_ms(1000);
+    }
 
     return 0;
 }

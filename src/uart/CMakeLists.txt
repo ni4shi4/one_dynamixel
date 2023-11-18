@@ -1,13 +1,13 @@
 add_library(
-  spi
+  uart
   STATIC communication.c
 )
 target_include_directories(
-  spi
-  PUBLIC ${PROJECT_SOURCE_DIR}/include/spi
+  uart
+  PUBLIC ${PROJECT_SOURCE_DIR}/include/uart
 )
 target_link_libraries(
-  spi
+  uart
   pico_base
   util
 )

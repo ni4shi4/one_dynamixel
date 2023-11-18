@@ -9,11 +9,13 @@ add_executable(
 
 target_link_libraries(
   test_crc_app
-  unity util
+  unity
+  util
 )
 target_link_libraries(
   test_byte_app
-  unity util
+  unity
+  util
 )
 
 add_test(

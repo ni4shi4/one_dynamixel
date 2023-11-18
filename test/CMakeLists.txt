@@ -1,2 +1,2 @@
 add_subdirectory(util)
-add_subdirectory(spi)
+add_subdirectory(uart)

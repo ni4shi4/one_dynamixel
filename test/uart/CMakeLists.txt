@@ -5,7 +5,8 @@ add_executable(
 
 target_link_libraries(
   test_communication_app
-  unity spi
+  unity
+  uart
 )
 
 add_test(

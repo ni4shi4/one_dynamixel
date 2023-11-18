@@ -19,7 +19,7 @@ extern "C" {
  * @param[in] parameter 追加情報(配列)
  * @return パケットのバイト長
 */
-int create_spi_packet(
+int create_uart_packet(
     uint8_t *packet,
     uint8_t id,
     uint16_t parameter_length,
@@ -40,7 +40,7 @@ int create_spi_packet(
  * @retval true checksum値が正しい
  * @retval false checksum値が誤っている(受信データに誤りがある可能性がある)
 */
-bool parse_spi_packet(
+bool parse_uart_packet(
     const uint8_t *packet,
     uint8_t *id,
     uint16_t *length,

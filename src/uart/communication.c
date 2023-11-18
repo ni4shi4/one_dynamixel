@@ -2,11 +2,11 @@
 #include <string.h>
 #include "util/byte.h"
 #include "util/crc.h"
-#include "spi/communication.h"
-#include "spi/packet_byte.h"
+#include "uart/communication.h"
+#include "uart/packet_byte.h"
 
 
-int create_spi_packet(
+int create_uart_packet(
     uint8_t *packet,
     uint8_t id,
     uint16_t parameter_length,
@@ -92,7 +92,7 @@ int create_spi_packet(
 }
 
 
-bool parse_spi_packet(
+bool parse_uart_packet(
     const uint8_t *packet,
     uint8_t *id,
     uint16_t *length,

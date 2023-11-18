@@ -1,5 +1,5 @@
 #include "unity.h"
-#include "spi/communication.h"
+#include "uart/communication.h"
 
 void setUp(void)
 {
@@ -9,7 +9,7 @@ void tearDown(void)
 {
 }
 
-void test_create_spi_packet_CreateExpectedOutputForSpecificInput(void)
+void test_create_uart_packet_CreateExpectedOutputForSpecificInput(void)
 {
     uint8_t id1 = 0x01, instruction1 = 0x02;
     uint16_t parameter_length1 = 0x0004;
@@ -31,7 +31,7 @@ void test_create_spi_packet_CreateExpectedOutputForSpecificInput(void)
         0, 0, 0, 0, 0, 0 // 余計にデータを詰めて余計な処理がされていないかを確認する
     };
 
-    packet_size1 = create_spi_packet(
+    packet_size1 = create_uart_packet(
         packet1,
         id1, parameter_length1, instruction1, parameter1
     );
@@ -55,7 +55,7 @@ void test_create_spi_packet_CreateExpectedOutputForSpecificInput(void)
         0, 0, 0, 0, 0, 0 // 余計にデータを詰めて余計な処理がされていないかを確認する
     };
 
-    packet_size2 = create_spi_packet(
+    packet_size2 = create_uart_packet(
         packet2,
         id2, parameter_length2, instruction2, parameter2
     );
@@ -84,7 +84,7 @@ void test_create_spi_packet_CreateExpectedOutputForSpecificInput(void)
         0, 0, 0, 0, 0 // 余計にデータを詰めて余計な処理がされていないかを確認する
     };
 
-    packet_size3 = create_spi_packet(
+    packet_size3 = create_uart_packet(
         packet3,
         id3, parameter_length3, instruction3, parameter3
     );
@@ -95,6 +95,6 @@ void test_create_spi_packet_CreateExpectedOutputForSpecificInput(void)
 int main(void)
 {
     UNITY_BEGIN();
-    RUN_TEST(test_create_spi_packet_CreateExpectedOutputForSpecificInput);
+    RUN_TEST(test_create_uart_packet_CreateExpectedOutputForSpecificInput);
     return UNITY_END();
 }
