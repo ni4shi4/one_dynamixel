@@ -19,7 +19,7 @@ const uint BAUD_RATE = 57600;
 const uint DATA_BITS = 8;
 const uint STOP_BITS = 1;
 const uart_parity_t PARITY = UART_PARITY_NONE;
-const uint32_t WAIT_US = 1000000;
+const uint32_t WAIT_US = 10;
 
 // パケット処理の仕様
 #define READ_SIZE 50
@@ -45,7 +45,7 @@ int main()
 
     while (1)
     {
-        packet_size = create_uart_packet(packet, 0xfe, 0, 1, NULL);
+        packet_size = create_uart_packet(packet, 0x01, 1, NULL, 0);
         uart_write_blocking(UART_ID, packet, packet_size);
 
         if (uart_is_readable_within_us(UART_ID, WAIT_US))
@@ -59,10 +59,11 @@ int main()
             }
 
             puts("Read buffer:");
-            for (int i = 0; i < READ_SIZE; i++)
+            for (int i = 0; i < 20; i++)
             {
-                printf("%2hhx", buffer[i]);
+                printf("0x%02x ", buffer[i]);
             }
+            puts("\n");
         }
         else
         {

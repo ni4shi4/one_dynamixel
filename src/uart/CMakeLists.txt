@@ -4,7 +4,7 @@ add_library(
 )
 target_include_directories(
   uart
-  PUBLIC ${PROJECT_SOURCE_DIR}/include/uart
+  PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include
 )
 target_link_libraries(
   uart

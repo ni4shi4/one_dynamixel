@@ -1,15 +1,19 @@
 #include "unity.h"
+#include "unity_fixture.h"
 #include "util/byte.h"
 
-void setUp(void)
+TEST_GROUP(BYTE);
+
+TEST_SETUP(BYTE)
 {
 }
 
-void tearDown(void)
+TEST_TEAR_DOWN(BYTE)
 {
 }
 
-void test_divide_into_byte_pair_ReturnExpectedValueForSpecificInput(void)
+
+TEST(BYTE, test_divide_into_byte_pair_ReturnExpectedValueForSpecificInput)
 {
     uint16_t input = 0x1234;
     uint8_t byte_lr[2] = {0};
@@ -19,19 +23,11 @@ void test_divide_into_byte_pair_ReturnExpectedValueForSpecificInput(void)
     TEST_ASSERT_EQUAL_HEX8_ARRAY(expected, byte_lr, 2);
 }
 
-void test_combine_byte_pair_ReturnExpectedValueForSpecificData(void)
+TEST(BYTE, test_combine_byte_pair_ReturnExpectedValueForSpecificData)
 {
     uint8_t byte_l = 0x12;
     uint8_t byte_r = 0x34;
     uint16_t expected = 0x3412;
 
     TEST_ASSERT_EQUAL_HEX16(expected, combine_byte_pair(byte_l, byte_r));
-}
-
-int main(void)
-{
-    UNITY_BEGIN();
-    RUN_TEST(test_divide_into_byte_pair_ReturnExpectedValueForSpecificInput);
-    RUN_TEST(test_combine_byte_pair_ReturnExpectedValueForSpecificData);
-    return UNITY_END();
 }

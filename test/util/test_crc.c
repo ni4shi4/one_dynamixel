@@ -1,15 +1,18 @@
 #include "unity.h"
+#include "unity_fixture.h"
 #include "util/crc.h"
 
-void setUp(void)
+TEST_GROUP(CRC);
+
+TEST_SETUP(CRC)
 {
 }
 
-void tearDown(void)
+TEST_TEAR_DOWN(CRC)
 {
 }
 
-void test_bit_reflect_8_ReturnExpectedValueForSpecificInput(void)
+TEST(CRC, test_bit_reflect_8_ReturnExpectedValueForSpecificInput)
 {
     uint8_t input, expected;
 
@@ -23,7 +26,7 @@ void test_bit_reflect_8_ReturnExpectedValueForSpecificInput(void)
 
 }
 
-void test_bit_reflect_16_ReturnExpectedValueForSpecificInput(void)
+TEST(CRC, test_bit_reflect_16_ReturnExpectedValueForSpecificInput)
 {
     uint16_t input, expected;
 
@@ -37,7 +40,7 @@ void test_bit_reflect_16_ReturnExpectedValueForSpecificInput(void)
 
 }
 
-void test_crc_16_ibm_ReturnExpectedValueForSpecificData(void)
+TEST(CRC, test_crc_16_ibm_ReturnExpectedValueForSpecificData)
 {
     int len1 = 1;
     uint8_t data1[] = {
@@ -85,13 +88,4 @@ void test_crc_16_ibm_ReturnExpectedValueForSpecificData(void)
     };
     uint16_t expected5 = 0xe2a3;
     TEST_ASSERT_EQUAL_HEX16(expected5, crc_16_ibm(data5, len5));
-}
-
-int main(void)
-{
-    UNITY_BEGIN();
-    RUN_TEST(test_bit_reflect_8_ReturnExpectedValueForSpecificInput);
-    RUN_TEST(test_bit_reflect_16_ReturnExpectedValueForSpecificInput);
-    RUN_TEST(test_crc_16_ibm_ReturnExpectedValueForSpecificData);
-    return UNITY_END();
 }

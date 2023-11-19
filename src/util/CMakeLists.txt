@@ -5,7 +5,7 @@ add_library(
 
 target_include_directories(
   util
-  PUBLIC ${PROJECT_SOURCE_DIR}/include/util
+  PUBLIC ${CMAKE_CURRENT_LIST_DIR}/include
 )
 
 target_link_libraries(

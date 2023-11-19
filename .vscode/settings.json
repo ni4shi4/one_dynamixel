@@ -4,7 +4,11 @@
     "compare": "c",
     "stdlib.h": "c",
     "utilities.h": "c",
-    "string_view": "c"
+    "string_view": "c",
+    "unity_fixture.h": "c",
+    "unity.h": "c",
+    "crc.h": "c",
+    "byte.h": "c"
   },
   "json.schemaDownload.enable": true,
   "cmake.useCMakePresets": "always",

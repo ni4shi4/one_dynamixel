@@ -1,7 +1,7 @@
 # Generated Cmake Pico project file
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.25)
 
-set(TEST_BUILD OFF CACHE BOOL "Whether build with test config")
+option(TEST_BUILD "Whether build with test config" OFF)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_CXX_STANDARD 17)
@@ -35,5 +35,6 @@ if(TEST_BUILD)
     GIT_TAG v2.5.2
   )
   FetchContent_MakeAvailable(unity)
+  # unity_fixtureをオンにする
   add_subdirectory(test)
 endif()

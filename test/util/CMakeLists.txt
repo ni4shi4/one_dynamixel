@@ -1,28 +1,26 @@
-add_executable(
-  test_crc_app
+add_library(
+  test_util
   test_crc.c
-)
-add_executable(
-  test_byte_app
+  test_crc_runner.c
   test_byte.c
+  test_byte_runner.c
+)
+target_link_libraries(
+  test_util
+  PUBLIC unity
+  PRIVATE util
 )
 
-target_link_libraries(
-  test_crc_app
-  unity
-  util
+add_executable(
+  test_util_app
+  test_util.c
 )
 target_link_libraries(
-  test_byte_app
-  unity
-  util
+  test_util_app
+  test_util
 )
 
 add_test(
-  NAME test_crc
-  COMMAND $<TARGET_FILE:test_crc_app>
-)
-add_test(
-  NAME test_byte
-  COMMAND $<TARGET_FILE:test_byte_app>
+  NAME test_util
+  COMMAND $<TARGET_FILE:test_util_app>
 )

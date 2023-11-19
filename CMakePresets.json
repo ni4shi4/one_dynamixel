@@ -1,8 +1,8 @@
 {
-    "version": 3,
+    "version": 6,
     "cmakeMinimumRequired": {
         "major": 3,
-        "minor": 21,
+        "minor": 25,
         "patch": 0
     },
     "configurePresets": [
@@ -42,6 +42,10 @@
                 "CMAKE_BUILD_TYPE": {
                     "type": "STRING",
                     "value": "Release"
+                },
+                "UNITY_EXTENSION_FIXTURE": {
+                    "type": "BOOL",
+                    "value": "ON"
                 }
             }
         },
@@ -91,7 +95,14 @@
         {
             "name": "test",
             "displayName": "Test Config",
-            "configurePreset": "test"
+            "configurePreset": "test",
+            "output": {
+                "shortProgress": true,
+                "verbosity": "verbose"
+            },
+            "execution": {
+                "stopOnFailure": true
+            }
         }
     ]
 }
