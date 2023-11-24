@@ -29,12 +29,21 @@ if(TEST_BUILD)
   include(CTest)
   enable_testing()
 
+  # FetchContent_Declare(
+  #   unity
+  #   GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
+  #   GIT_TAG v2.5.2
+  # )
+  # # unity_fixtureをオンにしている
+  # FetchContent_MakeAvailable(unity)
+
   FetchContent_Declare(
-    unity
-    GIT_REPOSITORY https://github.com/ThrowTheSwitch/Unity.git
-    GIT_TAG v2.5.2
+    CppUTest
+    GIT_REPOSITORY https://github.com/cpputest/cpputest.git
+    GIT_TAG v4.0
   )
-  FetchContent_MakeAvailable(unity)
-  # unity_fixtureをオンにする
+  set(TESTS OFF CACHE BOOL "Switch off CppUTest Test build")
+  FetchContent_MakeAvailable(CppUTest)
+
   add_subdirectory(test)
 endif()

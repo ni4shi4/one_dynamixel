@@ -1,5 +1,5 @@
-#ifndef _ONE_DYNAMIXEL_COMMUNICATION_H
-#define _ONE_DYNAMIXEL_COMMUNICATION_H
+#ifndef _ONE_DYNAMIXEL_ANALYZE_PACKET_H
+#define _ONE_DYNAMIXEL_ANALYZE_PACKET_H
 
 #include "pico.h"
 
@@ -52,7 +52,7 @@ int parse_uart_packet(
     uint8_t *instruction,
     uint8_t *error,
     uint8_t *parameter,
-    int *parameter_size
+    size_t *parameter_size
 );
 
 #ifdef __cplusplus

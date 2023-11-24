@@ -1,9 +1,39 @@
 #include <stdlib.h>
 #include <string.h>
-#include "util/byte.h"
 #include "util/crc.h"
-#include "uart/communication.h"
-#include "uart/packet_byte.h"
+#include "util/analyze_packet.h"
+#include "util/packet_byte.h"
+
+
+
+/**
+ * @brief 2バイトデータを1バイトずつに分割する(リトルエンディアン)
+ * @param[in] input 分割対象の2バイトデータ
+ * @param[out] byte_l 分割後の1バイト目のデータ
+ * @param[out] byte_r 分割後の2バイト目のデータ
+*/
+static void divide_into_byte_pair(
+    uint16_t input,
+    uint8_t *byte_l,
+    uint8_t *byte_r
+)
+{
+    *byte_l = input & 0xff;
+    *byte_r = input >> 8;
+}
+
+/**
+ * @brief 1バイトずつのデータを結合して1つの変数に格納する(リトルエンディアン)
+ * @param[in] byte_l 1バイト目のデータ
+ * @param[in] byte_r 2バイト目のデータ
+*/
+static uint16_t combine_byte_pair(
+    uint8_t byte_l,
+    uint8_t byte_r
+)
+{
+    return (byte_r << 8) | byte_l;
+}
 
 
 int create_uart_packet(
@@ -21,19 +51,19 @@ int create_uart_packet(
 
 
     // ヘッダーの代入
-    packet[0] = HEADER_1;
-    packet[1] = HEADER_2;
-    packet[2] = HEADER_3;
-    packet[3] = HEADER_R;
+    packet[0] = DYNAMIXEL__HEADER_1;
+    packet[1] = DYNAMIXEL__HEADER_2;
+    packet[2] = DYNAMIXEL__HEADER_3;
+    packet[3] = DYNAMIXEL__HEADER_R;
 
     // IDの代入
     packet[4] = id;
 
+    // 最大でも3つに1回の頻度で1バイトを追加すれば良いので、サイズは4/3倍あれば十分
+    fixed_parameter = (uint8_t *)malloc(parameter_size * 4 / 3);
     // パラメータの修正を行う(ヘッダーと同じ部分が出たらバイトを追加で付与する)
     if (parameter_size >= 3)
     {
-        // 最大でも3つに1回の頻度で1バイトを追加すれば良いので、サイズは4/3倍あれば十分
-        fixed_parameter = (uint8_t *)malloc(parameter_size * 4 / 3);
         fixed_parameter[0] = parameter[0];
         fixed_parameter[1] = parameter[1];
         fixed_parameter_size = 2;
@@ -41,14 +71,14 @@ int create_uart_packet(
         {
             fixed_parameter[fixed_parameter_size] = parameter[i];
             if (
-                parameter[i - 2] == HEADER_1
-                && parameter[i - 1] == HEADER_2
-                && parameter[i] == HEADER_3
+                parameter[i - 2] == DYNAMIXEL__HEADER_1
+                && parameter[i - 1] == DYNAMIXEL__HEADER_2
+                && parameter[i] == DYNAMIXEL__HEADER_3
             )
             {
                 // ヘッダーと同じ部分が出たらバイトを追加で付与する
                 fixed_parameter_size++;
-                fixed_parameter[fixed_parameter_size] = HEADER_N;
+                fixed_parameter[fixed_parameter_size] = DYNAMIXEL__HEADER_N;
             }
 
             fixed_parameter_size++;
@@ -100,20 +130,21 @@ int parse_uart_packet(
     uint8_t *instruction,
     uint8_t *error,
     uint8_t *parameter,
-    int *parameter_size
+    size_t *parameter_size
 )
 {
-    int i, length, parameter_size_l, parameter_position;
+    int i, length, parameter_position;
+    size_t parameter_size_l;
     uint16_t packet_crc, compute_crc;
 
     // ヘッダーの位置を探す
     for (i = 0; i < packet_size - 3; i++)
     {
         if (
-            packet[i] == HEADER_1
-            && packet[i + 1] == HEADER_2
-            && packet[i + 2] == HEADER_3
-            && packet[i + 3] == HEADER_R
+            packet[i] == DYNAMIXEL__HEADER_1
+            && packet[i + 1] == DYNAMIXEL__HEADER_2
+            && packet[i + 2] == DYNAMIXEL__HEADER_3
+            && packet[i + 3] == DYNAMIXEL__HEADER_R
         )
         {
             *header_position = i;
@@ -145,9 +176,9 @@ int parse_uart_packet(
                     for (int j = 3; j < parameter_size_l; j++)
                     {
                         if (
-                            packet[i + 4 + 3 + 2 + j - 3] != HEADER_1
-                            || packet[i + 4 + 3 + 2 + j - 2] != HEADER_2
-                            || packet[i + 4 + 3 + 2 + j - 1] != HEADER_3
+                            packet[i + 4 + 3 + 2 + j - 3] != DYNAMIXEL__HEADER_1
+                            || packet[i + 4 + 3 + 2 + j - 2] != DYNAMIXEL__HEADER_2
+                            || packet[i + 4 + 3 + 2 + j - 1] != DYNAMIXEL__HEADER_3
                         )
                         {
                             /*

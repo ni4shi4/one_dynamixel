@@ -1,6 +1,6 @@
 add_library(
   util
-  STATIC crc.c byte.c
+  crc.c analyze_packet.c
 )
 
 target_include_directories(

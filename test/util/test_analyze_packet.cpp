@@ -1,9 +1,19 @@
-#include "unity.h"
-#include "unity_fixture.h"
-#include "uart/communication.h"
+#include "CppUTest/TestHarness.h"
+#include "util/analyze_packet.h"
 
 #define PARAMETER_SIZE 100
 
+
+TEST_GROUP(ANALYZE_PACKET)
+{
+    void setup()
+    {
+    }
+
+    void teardown()
+    {
+    }
+};
 
 void test_parse_uart_packet_all_parameters(
     uint8_t *packet,
@@ -19,7 +29,8 @@ void test_parse_uart_packet_all_parameters(
 )
 {
     uint8_t id, instruction, error;
-    int header_position, parameter_size, result;
+    int header_position, result;
+    size_t parameter_size;
     uint8_t parameter[PARAMETER_SIZE] = {0};
 
     result = parse_uart_packet(
@@ -28,13 +39,18 @@ void test_parse_uart_packet_all_parameters(
         parameter, &parameter_size
     );
 
-    TEST_ASSERT_EQUAL_INT_MESSAGE(expected_header_position, header_position, "output test [header_posotion]");
-    TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_id, id, "output test [id]");
-    TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_instruction, instruction, "output test [instruction]");
-    TEST_ASSERT_EQUAL_HEX8_MESSAGE(expected_error, error, "output test [error]");
-    TEST_ASSERT_EQUAL_HEX8_ARRAY_MESSAGE(expected_parameter, parameter, compare_parameter_size, "output test [parameter]");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(expected_parameter_size, parameter_size, "output test [parameter_size]");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(expected_result, result, "return test");
+    CHECK_EQUAL_TEXT(expected_header_position, header_position, "output test [header_posotion]");
+    CHECK_EQUAL_TEXT(expected_id, id, "output test [id]");
+    CHECK_EQUAL_TEXT(expected_instruction, instruction, "output test [instruction]");
+    CHECK_EQUAL_TEXT(expected_error, error, "output test [error]");
+    CHECK_EQUAL_TEXT(expected_parameter_size, parameter_size, "output test [parameter_size]");
+    CHECK_EQUAL_TEXT(expected_result, result, "return test");
+    for (int i = 0; i < compare_parameter_size; i++)
+        CHECK_EQUAL_TEXT(
+            expected_parameter[i],
+            parameter[i],
+            "output test [parameter]"
+        );
 }
 
 void test_parse_uart_return_value(
@@ -44,7 +60,8 @@ void test_parse_uart_return_value(
 )
 {
     uint8_t id, instruction, error;
-    int header_position, parameter_size, result;
+    int header_position, result;
+    size_t parameter_size;
     uint8_t parameter[PARAMETER_SIZE] = {0};
 
     result = parse_uart_packet(
@@ -53,7 +70,7 @@ void test_parse_uart_return_value(
         parameter, &parameter_size
     );
 
-    TEST_ASSERT_EQUAL_INT_MESSAGE(expected_result, result, "return test");
+    CHECK_EQUAL_TEXT(expected_result, result, "return test");
 }
 
 void test_parse_uart_return_value_and_position(
@@ -64,7 +81,8 @@ void test_parse_uart_return_value_and_position(
 )
 {
     uint8_t id, instruction, error;
-    int header_position, parameter_size, result;
+    int header_position, result;
+    size_t parameter_size;
     uint8_t parameter[PARAMETER_SIZE] = {0};
 
     result = parse_uart_packet(
@@ -73,22 +91,12 @@ void test_parse_uart_return_value_and_position(
         parameter, &parameter_size
     );
 
-    TEST_ASSERT_EQUAL_INT_MESSAGE(expected_header_position, header_position, "output test [header_posotion]");
-    TEST_ASSERT_EQUAL_INT_MESSAGE(expected_result, result, "return test");
+    CHECK_EQUAL_TEXT(expected_header_position, header_position, "output test [header_posotion]");
+    CHECK_EQUAL_TEXT(expected_result, result, "return test");
 }
 
 
-TEST_GROUP(COMMUNICATION);
-
-TEST_SETUP(COMMUNICATION)
-{
-}
-
-TEST_TEAR_DOWN(COMMUNICATION)
-{
-}
-
-TEST(COMMUNICATION, test_create_uart_packet_CreateExpectedOutputForSpecificInput)
+TEST(ANALYZE_PACKET, test_create_uart_packet_CreateExpectedOutputForSpecificInput)
 {
     uint8_t id1 = 0x01, instruction1 = 0x02;
     uint16_t parameter_size1 = 0x0004;
@@ -114,8 +122,12 @@ TEST(COMMUNICATION, test_create_uart_packet_CreateExpectedOutputForSpecificInput
         packet1,
         id1, instruction1, parameter1, parameter_size1
     );
-    TEST_ASSERT_EQUAL_INT(expected_packet_size1, packet_size1);
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_packet1, packet1, 20);
+    CHECK_EQUAL(expected_packet_size1, packet_size1);
+    for (int i = 0; i < 20; i++)
+        CHECK_EQUAL(
+            expected_packet1[i],
+            packet1[i]
+        );
 
 
     uint8_t id2 = 0x01, instruction2 = 0x01;
@@ -138,8 +150,13 @@ TEST(COMMUNICATION, test_create_uart_packet_CreateExpectedOutputForSpecificInput
         packet2,
         id2, instruction2, parameter2, parameter_size2
     );
-    TEST_ASSERT_EQUAL_INT(expected_packet_size2, packet_size2);
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_packet2, packet2, 16);
+    CHECK_EQUAL(expected_packet_size2, packet_size2);
+    for (int i = 0; i < 16; i++)
+        CHECK_EQUAL(
+            expected_packet2[i],
+            packet2[i]
+        );
+
 
     // 例外処理をテスト
     uint8_t id3 = 0x01, instruction3 = 0x03;
@@ -167,11 +184,51 @@ TEST(COMMUNICATION, test_create_uart_packet_CreateExpectedOutputForSpecificInput
         packet3,
         id3, instruction3, parameter3, parameter_size3
     );
-    TEST_ASSERT_EQUAL_INT(expected_packet_size3, packet_size3);
-    TEST_ASSERT_EQUAL_HEX8_ARRAY(expected_packet3, packet3, 30);
+    CHECK_EQUAL(expected_packet_size3, packet_size3);
+    for (int i = 0; i < 30; i++)
+        CHECK_EQUAL(
+            expected_packet3[i],
+            packet3[i]
+        );
 }
 
-TEST(COMMUNICATION, test_parse_uart_packet_CreateExpectedOutputForSpecificInput)
+
+TEST(ANALYZE_PACKET, create_uart_packet_CreateExpectedOutputForParameterSize1)
+{
+    uint8_t id1 = 0x01, instruction1 = 0x06;
+    uint16_t parameter_size1 = 0x0001;
+    uint8_t parameter1[] = {
+        0xff
+    };
+    int packet_size1;
+    uint8_t packet1[20] = {0};
+
+    int expected_packet_size1 = 11;
+    uint8_t expected_packet1[] = {
+        0, 0,
+        0xff, 0xff, 0xfd, 0x00,
+        0x01,
+        0x04, 0x00,
+        0x06,
+        0xff,
+        0xa6, 0x64,
+        0, 0, 0, 0, 0, 0, 0 // 余計にデータを詰めて余計な処理がされていないかを確認する
+    };
+
+    packet_size1 = create_uart_packet(
+        packet1 + 2,
+        id1, instruction1, parameter1, parameter_size1
+    );
+    CHECK_EQUAL(expected_packet_size1, packet_size1);
+    for (int i = 0; i < 20; i++)
+        CHECK_EQUAL(
+            expected_packet1[i],
+            packet1[i]
+        );
+}
+
+
+TEST(ANALYZE_PACKET, test_parse_uart_packet_CreateExpectedOutputForSpecificInput)
 {
     int packet_size1 = 20;
     uint8_t packet1[] = {
@@ -231,7 +288,7 @@ TEST(COMMUNICATION, test_parse_uart_packet_CreateExpectedOutputForSpecificInput)
     );
 }
 
-TEST(COMMUNICATION, test_parse_uart_packet_ReturnErrorValueWhenDataIsInvalid)
+TEST(ANALYZE_PACKET, test_parse_uart_packet_ReturnErrorValueWhenDataIsInvalid)
 {
     int packet_size1 = 20;
     uint8_t packet1[] = {
@@ -268,7 +325,7 @@ TEST(COMMUNICATION, test_parse_uart_packet_ReturnErrorValueWhenDataIsInvalid)
     );
 }
 
-TEST(COMMUNICATION, test_parse_uart_packet_ReturnErrorValueWhenOnlySomeDataIsAvailable)
+TEST(ANALYZE_PACKET, test_parse_uart_packet_ReturnErrorValueWhenOnlySomeDataIsAvailable)
 {
     int packet_size1 = 10;
     uint8_t packet1[] = {
@@ -298,5 +355,20 @@ TEST(COMMUNICATION, test_parse_uart_packet_ReturnErrorValueWhenOnlySomeDataIsAva
 
     test_parse_uart_return_value(
         packet2, packet_size2, expected_result2
+    );
+
+
+    int packet_size3 = 12;
+    uint8_t packet3[] = {
+        0, 0, 0, 0, 0, 0, 0,
+        0xff, 0xff, 0xfd, 0x00,
+        0x01,
+        0x08
+    };
+
+    int expected_position3 = 7, expected_result3 = 2;
+
+    test_parse_uart_return_value(
+        packet3, packet_size3, expected_result3
     );
 }
