@@ -26,6 +26,41 @@ TEST_GROUP(Dynamixel)
     }
 };
 
+TEST(Dynamixel, WritePacketSucceed)
+{
+    uint8_t id = 0x01, instruction = 0x02;
+    uint16_t parameter_size = 0x0004;
+    uint8_t parameter[] = {
+        0x84, 0x00, 0x04, 0x00
+    };
+    int result;
+    uint8_t error;
+    size_t status_parameter_size;
+    uint8_t status_parameter[100] = {0};
+
+    int expected_packet_size;
+    uint8_t expected_packet[100] = {0};
+
+    expected_packet_size = create_uart_packet(
+        expected_packet,
+        id, instruction, parameter, parameter_size
+    );
+
+    mock().expectOneCall("pico_uart_write_blocking")
+        .withPointerParameter("uart_id", uart_dummy)
+        .withMemoryBufferParameter("src", expected_packet, expected_packet_size)
+        .withUnsignedIntParameter("len", expected_packet_size)
+        .andReturnValue(0);
+
+    result = dynamixel_write_uart_packet(
+        dynamixel_id,
+        id, instruction, parameter_size, parameter
+    );
+
+    LONGS_EQUAL(0, result);
+    mock().checkExpectations();
+}
+
 TEST(Dynamixel, SendPacketSucceed)
 {
     uint8_t id = 0x01, instruction = 0x02;
@@ -99,20 +134,13 @@ TEST(Dynamixel, SendPacketSucceed)
 }
 
 // ステータスパケットが複数に分割されて受信した場合でも読み取れる
-TEST(Dynamixel, SendPacketSucceedWithMultipleReadTwoTimes)
+TEST(Dynamixel, ReadAndParsePacketSucceedWithMultipleReadTwoTimes)
 {
-    uint8_t id = 0x01, instruction = 0x02;
-    uint16_t parameter_size = 0x0004;
-    uint8_t parameter[] = {
-        0x84, 0x00, 0x04, 0x00
-    };
     int result;
     uint8_t error;
     size_t status_parameter_size;
     uint8_t status_parameter[100] = {0};
 
-    int expected_packet_size;
-    uint8_t expected_packet[100] = {0};
     size_t expected_output_size = 15;
     uint8_t expected_output[] = {
         0,
@@ -131,15 +159,6 @@ TEST(Dynamixel, SendPacketSucceedWithMultipleReadTwoTimes)
         0, 0, 0x5d, 0x0e, 0x00, 0x00, 0, 0
     };
 
-    expected_packet_size = create_uart_packet(
-        expected_packet,
-        id, instruction, parameter, parameter_size
-    );
-
-    mock().expectOneCall("pico_uart_write_blocking")
-        .withPointerParameter("uart_id", uart_dummy)
-        .withMemoryBufferParameter("src", expected_packet, expected_packet_size)
-        .withUnsignedIntParameter("len", expected_packet_size);
     mock().expectOneCall("pico_uart_is_readable_within_us")
         .withPointerParameter("uart_id", uart_dummy)
         .withUnsignedIntParameter("us", 10)
@@ -164,9 +183,8 @@ TEST(Dynamixel, SendPacketSucceedWithMultipleReadTwoTimes)
         .withOutputParameterReturning("dst", NULL, 0)
         .andReturnValue(1);
 
-    result = dynamixel_send_packet(
+    result = dynamixel_read_uart_packet(
         dynamixel_id,
-        id, instruction, parameter_size, parameter,
         &error, &status_parameter_size, status_parameter + 2
     );
 
@@ -181,20 +199,13 @@ TEST(Dynamixel, SendPacketSucceedWithMultipleReadTwoTimes)
 }
 
 // ステータスパケットが複数に分割されて受信した場合でも読み取れる
-TEST(Dynamixel, SendPacketSucceedWithMultipleReadThreeTimes)
+TEST(Dynamixel, ReadAndParsePacketSucceedWithMultipleReadThreeTimes)
 {
-    uint8_t id = 0x01, instruction = 0x02;
-    uint16_t parameter_size = 0x0004;
-    uint8_t parameter[] = {
-        0x84, 0x00, 0x04, 0x00
-    };
     int result;
     uint8_t error;
     size_t status_parameter_size;
     uint8_t status_parameter[100] = {0};
 
-    int expected_packet_size;
-    uint8_t expected_packet[100] = {0};
     size_t expected_output_size = 59;
     uint8_t expected_output[] = {
         0,
@@ -219,15 +230,6 @@ TEST(Dynamixel, SendPacketSucceedWithMultipleReadThreeTimes)
         0, 0
     };
 
-    expected_packet_size = create_uart_packet(
-        expected_packet,
-        id, instruction, parameter, parameter_size
-    );
-
-    mock().expectOneCall("pico_uart_write_blocking")
-        .withPointerParameter("uart_id", uart_dummy)
-        .withMemoryBufferParameter("src", expected_packet, expected_packet_size)
-        .withUnsignedIntParameter("len", expected_packet_size);
     mock().expectOneCall("pico_uart_is_readable_within_us")
         .withPointerParameter("uart_id", uart_dummy)
         .withUnsignedIntParameter("us", 10)
@@ -252,9 +254,8 @@ TEST(Dynamixel, SendPacketSucceedWithMultipleReadThreeTimes)
         .withOutputParameterReturning("dst", NULL, 0)
         .andReturnValue(1);
 
-    result = dynamixel_send_packet(
+    result = dynamixel_read_uart_packet(
         dynamixel_id,
-        id, instruction, parameter_size, parameter,
         &error, &status_parameter_size, status_parameter + 2
     );
 
@@ -269,20 +270,13 @@ TEST(Dynamixel, SendPacketSucceedWithMultipleReadThreeTimes)
 }
 
 // ステータスパケットが複数に分割されて受信した場合でも読み取れる
-TEST(Dynamixel, SendPacketSucceedWithMultipleReadTNotFoundHeaderAtFirstRead)
+TEST(Dynamixel, ReadAndParsePacketSucceedWithMultipleReadTNotFoundHeaderAtFirstRead)
 {
-    uint8_t id = 0x01, instruction = 0x02;
-    uint16_t parameter_size = 0x0004;
-    uint8_t parameter[] = {
-        0x84, 0x00, 0x04, 0x00
-    };
     int result;
     uint8_t error;
     size_t status_parameter_size;
     uint8_t status_parameter[100] = {0};
 
-    int expected_packet_size;
-    uint8_t expected_packet[100] = {0};
     size_t expected_output_size = 15;
     uint8_t expected_output[] = {
         0,
@@ -301,15 +295,6 @@ TEST(Dynamixel, SendPacketSucceedWithMultipleReadTNotFoundHeaderAtFirstRead)
         0, 0, 0x5d, 0x0e, 0x00, 0x00, 0, 0
     };
 
-    expected_packet_size = create_uart_packet(
-        expected_packet,
-        id, instruction, parameter, parameter_size
-    );
-
-    mock().expectOneCall("pico_uart_write_blocking")
-        .withPointerParameter("uart_id", uart_dummy)
-        .withMemoryBufferParameter("src", expected_packet, expected_packet_size)
-        .withUnsignedIntParameter("len", expected_packet_size);
     mock().expectOneCall("pico_uart_is_readable_within_us")
         .withPointerParameter("uart_id", uart_dummy)
         .withUnsignedIntParameter("us", 10)
@@ -334,9 +319,8 @@ TEST(Dynamixel, SendPacketSucceedWithMultipleReadTNotFoundHeaderAtFirstRead)
         .withOutputParameterReturning("dst", NULL, 0)
         .andReturnValue(1);
 
-    result = dynamixel_send_packet(
+    result = dynamixel_read_uart_packet(
         dynamixel_id,
-        id, instruction, parameter_size, parameter,
         &error, &status_parameter_size, status_parameter + 2
     );
 
@@ -350,20 +334,13 @@ TEST(Dynamixel, SendPacketSucceedWithMultipleReadTNotFoundHeaderAtFirstRead)
     mock().checkExpectations();
 }
 
-TEST(Dynamixel, SendPacketWrongChecksumError)
+TEST(Dynamixel, ReadAndParsePacketWrongChecksumError)
 {
-    uint8_t id = 0x01, instruction = 0x02;
-    uint16_t parameter_size = 0x0004;
-    uint8_t parameter[] = {
-        0x84, 0x00, 0x04, 0x00
-    };
     int result;
     uint8_t error;
     size_t status_parameter_size;
     uint8_t status_parameter[100] = {0};
 
-    int expected_packet_size;
-    uint8_t expected_packet[100] = {0};
     size_t expected_output_size = 15;
     uint8_t expected_output[] = {
         0xff, 0xff, 0xfd, 0x00,
@@ -380,15 +357,6 @@ TEST(Dynamixel, SendPacketWrongChecksumError)
         0, 0, 0x5d, 0x0e, 0x00, 0x00, 0, 0
     };
 
-    expected_packet_size = create_uart_packet(
-        expected_packet,
-        id, instruction, parameter, parameter_size
-    );
-
-    mock().expectOneCall("pico_uart_write_blocking")
-        .withPointerParameter("uart_id", uart_dummy)
-        .withMemoryBufferParameter("src", expected_packet, expected_packet_size)
-        .withUnsignedIntParameter("len", expected_packet_size);
     mock().expectOneCall("pico_uart_is_readable_within_us")
         .withPointerParameter("uart_id", uart_dummy)
         .withUnsignedIntParameter("us", 10)
@@ -406,9 +374,8 @@ TEST(Dynamixel, SendPacketWrongChecksumError)
         .withOutputParameterReturning("dst", NULL, 0)
         .andReturnValue(1);
 
-    result = dynamixel_send_packet(
+    result = dynamixel_read_uart_packet(
         dynamixel_id,
-        id, instruction, parameter_size, parameter,
         &error, &status_parameter_size, status_parameter + 2
     );
 
@@ -422,13 +389,8 @@ TEST(Dynamixel, SendPacketWrongChecksumError)
     mock().checkExpectations();
 }
 
-TEST(Dynamixel, SendPacketStatusError)
+TEST(Dynamixel, ReadAndParsePacketStatusError)
 {
-    uint8_t id = 0x01, instruction = 0x02;
-    uint16_t parameter_size = 0x0004;
-    uint8_t parameter[] = {
-        0x84, 0x00, 0x04, 0x00
-    };
     int result;
     uint8_t error;
     size_t status_parameter_size;
@@ -452,15 +414,6 @@ TEST(Dynamixel, SendPacketStatusError)
         0, 0, 0x5d, 0x0e, 0x00, 0x00, 0, 0
     };
 
-    expected_packet_size = create_uart_packet(
-        expected_packet,
-        id, instruction, parameter, parameter_size
-    );
-
-    mock().expectOneCall("pico_uart_write_blocking")
-        .withPointerParameter("uart_id", uart_dummy)
-        .withMemoryBufferParameter("src", expected_packet, expected_packet_size)
-        .withUnsignedIntParameter("len", expected_packet_size);
     mock().expectOneCall("pico_uart_is_readable_within_us")
         .withPointerParameter("uart_id", uart_dummy)
         .withUnsignedIntParameter("us", 10)
@@ -478,9 +431,8 @@ TEST(Dynamixel, SendPacketStatusError)
         .withOutputParameterReturning("dst", NULL, 0)
         .andReturnValue(1);
 
-    result = dynamixel_send_packet(
+    result = dynamixel_read_uart_packet(
         dynamixel_id,
-        id, instruction, parameter_size, parameter,
         &error, &status_parameter_size, status_parameter + 2
     );
 
@@ -494,34 +446,18 @@ TEST(Dynamixel, SendPacketStatusError)
     mock().checkExpectations();
 }
 
-TEST(Dynamixel, SendPacketInadequateResponseErrorWithoutFindingHeader)
+TEST(Dynamixel, ReadAndParsePacketInadequateResponseErrorWithoutFindingHeader)
 {
-    uint8_t id = 0x01, instruction = 0x02;
-    uint16_t parameter_size = 0x0004;
-    uint8_t parameter[] = {
-        0x84, 0x00, 0x04, 0x00
-    };
     int result;
     uint8_t error;
     size_t status_parameter_size;
     uint8_t status_parameter[100] = {0};
 
-    int expected_packet_size;
-    uint8_t expected_packet[100] = {0};
     size_t expected_output_size = 3;
     uint8_t expected_output[] = {
         0, 0xff, 0xff, 0xa1
     };
 
-    expected_packet_size = create_uart_packet(
-        expected_packet,
-        id, instruction, parameter, parameter_size
-    );
-
-    mock().expectOneCall("pico_uart_write_blocking")
-        .withPointerParameter("uart_id", uart_dummy)
-        .withMemoryBufferParameter("src", expected_packet, expected_packet_size)
-        .withUnsignedIntParameter("len", expected_packet_size);
     mock().expectOneCall("pico_uart_is_readable_within_us")
         .withPointerParameter("uart_id", uart_dummy)
         .withUnsignedIntParameter("us", 10)
@@ -549,9 +485,8 @@ TEST(Dynamixel, SendPacketInadequateResponseErrorWithoutFindingHeader)
         .withOutputParameterReturning("dst", NULL, 0)
         .andReturnValue(1);
 
-    result = dynamixel_send_packet(
+    result = dynamixel_read_uart_packet(
         dynamixel_id,
-        id, instruction, parameter_size, parameter,
         &error, &status_parameter_size, status_parameter
     );
 
@@ -559,34 +494,18 @@ TEST(Dynamixel, SendPacketInadequateResponseErrorWithoutFindingHeader)
     mock().checkExpectations();
 }
 
-TEST(Dynamixel, SendPacketInadequateResponseErrorWithFindingHeader)
+TEST(Dynamixel, ReadAndParsePacketInadequateResponseErrorWithFindingHeader)
 {
-    uint8_t id = 0x01, instruction = 0x02;
-    uint16_t parameter_size = 0x0004;
-    uint8_t parameter[] = {
-        0x84, 0x00, 0x04, 0x00
-    };
     int result;
     uint8_t error;
     size_t status_parameter_size;
     uint8_t status_parameter[100] = {0};
 
-    int expected_packet_size;
-    uint8_t expected_packet[100] = {0};
     size_t expected_output_size = 7;
     uint8_t expected_output[] = {
         0, 0xff, 0xff, 0xfd, 0x00, 0x04, 0x00, 0x55
     };
 
-    expected_packet_size = create_uart_packet(
-        expected_packet,
-        id, instruction, parameter, parameter_size
-    );
-
-    mock().expectOneCall("pico_uart_write_blocking")
-        .withPointerParameter("uart_id", uart_dummy)
-        .withMemoryBufferParameter("src", expected_packet, expected_packet_size)
-        .withUnsignedIntParameter("len", expected_packet_size);
     mock().expectOneCall("pico_uart_is_readable_within_us")
         .withPointerParameter("uart_id", uart_dummy)
         .withUnsignedIntParameter("us", 10)
@@ -614,9 +533,8 @@ TEST(Dynamixel, SendPacketInadequateResponseErrorWithFindingHeader)
         .withOutputParameterReturning("dst", NULL, 0)
         .andReturnValue(1);
 
-    result = dynamixel_send_packet(
+    result = dynamixel_read_uart_packet(
         dynamixel_id,
-        id, instruction, parameter_size, parameter,
         &error, &status_parameter_size, status_parameter
     );
 
@@ -624,33 +542,17 @@ TEST(Dynamixel, SendPacketInadequateResponseErrorWithFindingHeader)
     mock().checkExpectations();
 }
 
-TEST(Dynamixel, SendPacketInadequateResponseErrorWithFewResponse)
+TEST(Dynamixel, ReadAndParsePacketInadequateResponseErrorWithFewResponse)
 {
-    uint8_t id = 0x01, instruction = 0x02;
-    uint16_t parameter_size = 0x0004;
-    uint8_t parameter[] = {
-        0x84, 0x00, 0x04, 0x00
-    };
     int result;
     uint8_t error;
     size_t status_parameter_size;
     uint8_t status_parameter[100] = {0};
 
-    int expected_packet_size;
-    uint8_t expected_packet[100] = {0};
     uint8_t expected_output[] = {
         0xa1
     };
 
-    expected_packet_size = create_uart_packet(
-        expected_packet,
-        id, instruction, parameter, parameter_size
-    );
-
-    mock().expectOneCall("pico_uart_write_blocking")
-        .withPointerParameter("uart_id", uart_dummy)
-        .withMemoryBufferParameter("src", expected_packet, expected_packet_size)
-        .withUnsignedIntParameter("len", expected_packet_size);
     mock().expectOneCall("pico_uart_is_readable_within_us")
         .withPointerParameter("uart_id", uart_dummy)
         .withUnsignedIntParameter("us", 10)
@@ -668,9 +570,8 @@ TEST(Dynamixel, SendPacketInadequateResponseErrorWithFewResponse)
         .withOutputParameterReturning("dst", NULL, 0)
         .andReturnValue(1);
 
-    result = dynamixel_send_packet(
+    result = dynamixel_read_uart_packet(
         dynamixel_id,
-        id, instruction, parameter_size, parameter,
         &error, &status_parameter_size, status_parameter
     );
 
@@ -678,13 +579,8 @@ TEST(Dynamixel, SendPacketInadequateResponseErrorWithFewResponse)
     mock().checkExpectations();
 }
 
-TEST(Dynamixel, SendPacketWithHugeResponse)
+TEST(Dynamixel, ReadAndParsePacketWithHugeResponse)
 {
-    uint8_t id = 0x01, instruction = 0x02;
-    uint16_t parameter_size = 0x0004;
-    uint8_t parameter[] = {
-        0x84, 0x00, 0x04, 0x00
-    };
     int result;
     uint8_t error;
     size_t status_parameter_size;
@@ -709,15 +605,6 @@ TEST(Dynamixel, SendPacketWithHugeResponse)
         0xd8, 0x63
     };
 
-    expected_packet_size = create_uart_packet(
-        expected_packet,
-        id, instruction, parameter, parameter_size
-    );
-
-    mock().expectOneCall("pico_uart_write_blocking")
-        .withPointerParameter("uart_id", uart_dummy)
-        .withMemoryBufferParameter("src", expected_packet, expected_packet_size)
-        .withUnsignedIntParameter("len", expected_packet_size);
     mock().expectOneCall("pico_uart_is_readable_within_us")
         .withPointerParameter("uart_id", uart_dummy)
         .withUnsignedIntParameter("us", 10)
@@ -737,9 +624,8 @@ TEST(Dynamixel, SendPacketWithHugeResponse)
             .andReturnValue(0);
     }
 
-    result = dynamixel_send_packet(
+    result = dynamixel_read_uart_packet(
         dynamixel_id,
-        id, instruction, parameter_size, parameter,
         &error, &status_parameter_size, status_parameter + 2
     );
 
@@ -747,13 +633,8 @@ TEST(Dynamixel, SendPacketWithHugeResponse)
     mock().checkExpectations();
 }
 
-TEST(Dynamixel, SendPacketTimeoutError)
+TEST(Dynamixel, ReadAndParsePacketTimeoutError)
 {
-    uint8_t id = 0x01, instruction = 0x02;
-    uint16_t parameter_size = 0x0004;
-    uint8_t parameter[] = {
-        0x84, 0x00, 0x04, 0x00
-    };
     int result;
     uint8_t error;
     size_t status_parameter_size;
@@ -765,9 +646,8 @@ TEST(Dynamixel, SendPacketTimeoutError)
         .andReturnValue(1);
     mock().ignoreOtherCalls();
 
-    result = dynamixel_send_packet(
+    result = dynamixel_read_uart_packet(
         dynamixel_id,
-        id, instruction, parameter_size, parameter,
         &error, &status_parameter_size, status_parameter + 2
     );
 
