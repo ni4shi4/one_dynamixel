@@ -5,7 +5,10 @@ add_executable(
   test_all.cpp
   test_communicate_device.cpp
   test_dynamixel_initialization.cpp
-  test_dynamixel.cpp
+  test_dynamixel_packet.cpp
+  test_dynamixel_instruction.cpp
+  test_dynamixel_read.cpp
+  test_dynamixel_write.cpp
 )
 target_link_libraries(
   test_dynamixel_app

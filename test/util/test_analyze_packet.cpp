@@ -288,6 +288,34 @@ TEST(ANALYZE_PACKET, test_parse_uart_packet_CreateExpectedOutputForSpecificInput
     );
 }
 
+TEST(ANALYZE_PACKET, ParseParameterSize0)
+{
+    int packet_size = 17;
+    uint8_t packet[] = {
+        0, 0,
+        0xff, 0xff, 0xfd, 0x00,
+        0x01,
+        0x04, 0x00,
+        0x55,
+        0x00,
+        0xa1, 0x0c,
+        0, 0, 0, 0
+    };
+
+    uint8_t expected_id = 0x01, expected_instruction = 0x55, expected_error = 0x00;
+    int expected_header_position = 2, expected_parameter_size = 0, expected_result = 0;
+    uint8_t expected_parameter[] = {
+        0, 0
+    };
+
+    test_parse_uart_packet_all_parameters(
+        packet, packet_size,
+        expected_id, expected_instruction, expected_error,
+        expected_header_position, expected_parameter_size, expected_result,
+        expected_parameter, 2
+    );
+}
+
 TEST(ANALYZE_PACKET, test_parse_uart_packet_ReturnErrorValueWhenDataIsInvalid)
 {
     int packet_size1 = 20;
@@ -371,4 +399,42 @@ TEST(ANALYZE_PACKET, test_parse_uart_packet_ReturnErrorValueWhenOnlySomeDataIsAv
     test_parse_uart_return_value(
         packet3, packet_size3, expected_result3
     );
+}
+
+
+TEST(ANALYZE_PACKET, CombinePositive4Bytes)
+{
+    int32_t result = combine_signed_4_byte(0xff, 0x00, 0x00, 0x00);
+    LONGS_EQUAL(255, result);
+}
+
+TEST(ANALYZE_PACKET, CombineNegative4Bytes)
+{
+    int32_t result = combine_signed_4_byte(0xff, 0xff, 0xff, 0xff);
+    LONGS_EQUAL(-1, result);
+}
+
+TEST(ANALYZE_PACKET, CombinePositive2Bytes)
+{
+    int16_t result = combine_signed_2_byte(0xff, 0x00);
+    LONGS_EQUAL(255, result);
+}
+
+TEST(ANALYZE_PACKET, CombineNegative2Bytes)
+{
+    int16_t result = combine_signed_2_byte(0xff, 0xff);
+    LONGS_EQUAL(-1, result);
+}
+
+TEST(ANALYZE_PACKET, DivideInto4Bytes)
+{
+    int32_t input = 0x30201ff;
+    uint8_t bytes[4];
+    uint8_t expected_bytes[] = {0xff, 0x01, 0x02, 0x03};
+    divide_into_4_byte(input, bytes, bytes + 1, bytes + 2, bytes + 3);
+
+    for (size_t i = 0; i < 4; i++)
+    {
+        LONGS_EQUAL(expected_bytes[i], bytes[i]);
+    }
 }

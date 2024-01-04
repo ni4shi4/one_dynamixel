@@ -8,6 +8,69 @@ extern "C" {
 #endif
 
 
+/**
+ * @brief 2バイトデータを1バイトずつに分割する(リトルエンディアン)
+ * @param[in] input 分割対象の2バイトデータ
+ * @param[out] byte_l 分割後の1バイト目のデータ
+ * @param[out] byte_r 分割後の2バイト目のデータ
+*/
+void divide_into_byte_pair(
+    uint16_t input,
+    uint8_t *byte_l,
+    uint8_t *byte_r
+);
+
+/**
+ * @brief 4バイトデータを1バイトずつに分割する(リトルエンディアン)
+ * @param[in] input 分割対象の4バイトデータ
+ * @param[out] byte_1 分割後の1バイト目のデータ
+ * @param[out] byte_2 分割後の2バイト目のデータ
+ * @param[out] byte_3 分割後の3バイト目のデータ
+ * @param[out] byte_4 分割後の4バイト目のデータ
+*/
+void divide_into_4_byte(
+    int32_t input,
+    uint8_t *byte_1,
+    uint8_t *byte_2,
+    uint8_t *byte_3,
+    uint8_t *byte_4
+);
+
+
+/**
+ * @brief 1バイトずつのデータを結合して1つの変数に格納する(リトルエンディアン)
+ * @param[in] byte_l 1バイト目のデータ
+ * @param[in] byte_r 2バイト目のデータ
+*/
+uint16_t combine_byte_pair(
+    uint8_t byte_l,
+    uint8_t byte_r
+);
+
+/**
+ * @brief 2バイトデータを結合して1つの変数に格納する(リトルエンディアン)
+ * @param[in] byte_1 1バイト目のデータ
+ * @param[in] byte_2 2バイト目のデータ
+*/
+int16_t combine_signed_2_byte(
+    uint8_t byte_1,
+    uint8_t byte_2
+);
+
+/**
+ * @brief 4バイトデータを結合して1つの変数に格納する(リトルエンディアン)
+ * @param[in] byte_1 1バイト目のデータ
+ * @param[in] byte_2 2バイト目のデータ
+ * @param[in] byte_3 3バイト目のデータ
+ * @param[in] byte_4 4バイト目のデータ
+*/
+int32_t combine_signed_4_byte(
+    uint8_t byte_1,
+    uint8_t byte_2,
+    uint8_t byte_3,
+    uint8_t byte_4
+);
+
 /***
  * @brief SPI通信で送信するデータ(インストラクションパケット)を作成する
  *

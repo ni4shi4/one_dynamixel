@@ -29,6 +29,17 @@ void pico_uart_deinit(
         ->withPointerParameters("uart_id", uart_id);
 }
 
+uint pico_uart_set_baudrate(
+    uart_inst_t *uart_id,
+    uint baud_rate
+)
+{
+    return mock_c()->actualCall("pico_uart_set_baudrate")
+        ->withPointerParameters("uart_id", uart_id)
+        ->withUnsignedIntParameters("baud_rate", baud_rate)
+        ->unsignedIntReturnValue();
+}
+
 void pico_uart_set_fifo_enabled(
     uart_inst_t *uart_id,
     bool enabled
@@ -56,7 +67,7 @@ int pico_uart_is_readable(
 {
     return mock_c()->actualCall("pico_uart_is_readable")
         ->withPointerParameters("uart_id", uart_id)
-        ->intReturnValue();
+        ->returnIntValueOrDefault(0);
 }
 
 int pico_uart_is_readable_within_us(
@@ -66,7 +77,7 @@ int pico_uart_is_readable_within_us(
     return mock_c()->actualCall("pico_uart_is_readable_within_us")
         ->withPointerParameters("uart_id", uart_id)
         ->withUnsignedIntParameters("us", us)
-        ->intReturnValue();
+        ->returnIntValueOrDefault(0);
 }
 
 int pico_uart_read_raw(

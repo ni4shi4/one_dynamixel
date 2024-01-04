@@ -39,6 +39,19 @@ void pico_uart_deinit(
 
 
 /**
+ * @brief ボーレートを設定する
+ *
+ * @param[in] *uart_id uartインスタンス
+ * @param[in] baud_rate UARTの通信でのボーレート
+ * @return 実際に設定されたボーレート
+*/
+uint pico_uart_set_baudrate(
+    uart_inst_t *uart_id,
+    uint baud_rate
+);
+
+
+/**
  * @brief UARTのFIFOを有効化・無効化する
  *
  * @param[in] *uart_id uartインスタンス

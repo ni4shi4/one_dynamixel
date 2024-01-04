@@ -1,6 +1,6 @@
 add_library(
   util
-  crc.c analyze_packet.c
+  crc.c analyze_packet.c packet_byte.c
 )
 
 target_include_directories(

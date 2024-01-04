@@ -13,8 +13,8 @@ pico_enable_stdio_usb(one_dynamixel 1)
 target_link_libraries(
   one_dynamixel
   pico_stdlib
-  hardware_uart
-  uart
+  dynamixel
+  # util
 )
 
 pico_add_extra_outputs(one_dynamixel)

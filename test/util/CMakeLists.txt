@@ -3,6 +3,7 @@ add_executable(
   test_all.cpp
   test_crc.cpp
   test_analyze_packet.cpp
+  test_packet_byte.cpp
 )
 target_link_libraries(
   test_util_app

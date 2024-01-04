@@ -27,6 +27,15 @@
           "break main",
           "continue"
       ]
+    },
+    {
+      "name": "(ctest) Launch",
+      "type": "cppdbg",
+      "stopAtEntry": true,
+      "request": "launch",
+      "cwd": "${cmake.testWorkingDirectory}",
+      "program": "${cmake.testProgram}",
+      "args": ["${cmake.testArgs}"],
     }
   ]
 }

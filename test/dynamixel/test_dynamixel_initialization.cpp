@@ -145,3 +145,15 @@ TEST(DynamixelInitialization, ProhibitUseOfSameUART)
     if (dynamixel_id2)
         dynamixel_destroy(dynamixel_id2);
 }
+
+TEST(DynamixelInitialization, ProhibitUnsupportedBaudRate)
+{
+    mock().ignoreOtherCalls();
+    dynamixel_t dynamixel_id = dynamixel_create(
+        uart_dummy, 8, 9, 102, 100, 10
+    );
+
+    CHECK(dynamixel_id == NULL);
+    if (dynamixel_id)
+        dynamixel_destroy(dynamixel_id);
+}

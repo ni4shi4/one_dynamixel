@@ -8,7 +8,16 @@
     "unity_fixture.h": "c",
     "unity.h": "c",
     "crc.h": "c",
-    "byte.h": "c"
+    "byte.h": "c",
+    "communication.h": "c",
+    "string.h": "c",
+    "gpio.h": "c",
+    "mocksupport_c.h": "c",
+    "analyze_packet.h": "c",
+    "uart.h": "c",
+    "pico_communicator.h": "c",
+    "packet_byte.h": "c",
+    "dynamixel.h": "c"
   },
   "json.schemaDownload.enable": true,
   "cmake.useCMakePresets": "always",

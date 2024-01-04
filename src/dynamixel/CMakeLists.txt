@@ -10,6 +10,7 @@ target_link_libraries(
   dynamixel_headers
   INTERFACE
     pico_base
+    pico_time
     pico_communicator_headers
     hardware_gpio_headers
     util
@@ -35,7 +36,10 @@ add_library(
 )
 target_link_libraries(
   dynamixel
-  dynamixel_impl_interface
-  pico_communicator
-  hardware_gpio
+  PUBLIC
+    dynamixel_impl_interface
+    hardware_gpio
+    m
+  PRIVATE
+    pico_communicator
 )

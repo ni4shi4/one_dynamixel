@@ -10,6 +10,7 @@
             "name": "default",
             "displayName": "Default Config",
             "description": "Default build config with Ninja generator",
+            "generator": "Ninja",
             "hidden": true,
             "binaryDir": "build/default"
         },
@@ -41,11 +42,7 @@
                 },
                 "CMAKE_BUILD_TYPE": {
                     "type": "STRING",
-                    "value": "Release"
-                },
-                "UNITY_EXTENSION_FIXTURE": {
-                    "type": "BOOL",
-                    "value": "ON"
+                    "value": "Debug"
                 }
             }
         },

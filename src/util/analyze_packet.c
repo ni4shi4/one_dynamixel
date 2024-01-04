@@ -6,13 +6,7 @@
 
 
 
-/**
- * @brief 2バイトデータを1バイトずつに分割する(リトルエンディアン)
- * @param[in] input 分割対象の2バイトデータ
- * @param[out] byte_l 分割後の1バイト目のデータ
- * @param[out] byte_r 分割後の2バイト目のデータ
-*/
-static void divide_into_byte_pair(
+void divide_into_byte_pair(
     uint16_t input,
     uint8_t *byte_l,
     uint8_t *byte_r
@@ -22,12 +16,22 @@ static void divide_into_byte_pair(
     *byte_r = input >> 8;
 }
 
-/**
- * @brief 1バイトずつのデータを結合して1つの変数に格納する(リトルエンディアン)
- * @param[in] byte_l 1バイト目のデータ
- * @param[in] byte_r 2バイト目のデータ
-*/
-static uint16_t combine_byte_pair(
+void divide_into_4_byte(
+    int32_t input,
+    uint8_t *byte_1,
+    uint8_t *byte_2,
+    uint8_t *byte_3,
+    uint8_t *byte_4
+)
+{
+    *byte_4 = input >> 24;
+    *byte_3 = (input >> 16) & 0xff;
+    *byte_2 = (input >> 8) & 0xff;
+    *byte_1 = input & 0xff;
+}
+
+
+uint16_t combine_byte_pair(
     uint8_t byte_l,
     uint8_t byte_r
 )
@@ -35,6 +39,28 @@ static uint16_t combine_byte_pair(
     return (byte_r << 8) | byte_l;
 }
 
+int16_t combine_signed_2_byte(
+    uint8_t byte_1,
+    uint8_t byte_2
+)
+{
+    return ((int16_t)byte_2 << 8) | (int16_t)byte_1;
+}
+
+int32_t combine_signed_4_byte(
+    uint8_t byte_1,
+    uint8_t byte_2,
+    uint8_t byte_3,
+    uint8_t byte_4
+)
+{
+    return (
+        ((int32_t)byte_4 << 24)
+        | ((int32_t)byte_3 << 16)
+        | ((int32_t)byte_2 << 8)
+        | (int32_t)byte_1
+    );
+}
 
 int create_uart_packet(
     uint8_t *packet,

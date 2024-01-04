@@ -24,6 +24,8 @@ pico_sdk_init()
 
 add_subdirectory(src)
 
+add_subdirectory(examples)
+
 if(TEST_BUILD)
   include(FetchContent)
   include(CTest)
